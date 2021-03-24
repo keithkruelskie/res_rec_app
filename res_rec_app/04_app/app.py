@@ -2,6 +2,8 @@ from flask import Flask, Response, request, jsonify, render_template
 
 from flask_pymongo import PyMongo
 
+import pymongo
+
 import numpy as np
 #MPLD3 lets us make an html of a matplotlib plot:
 import matplotlib.pyplot as plt, mpld3
@@ -24,17 +26,45 @@ port = 27017
 db_name = "myDatabase"
 
 app = Flask('reporting_app')
-app.config["MONGO_URI"] = f"mongodb://localhost:{port}/{db_name}"
-mongo = PyMongo(app)
+try:
+    app.config["MONGO_URI"] = f"mongodb+srv://dishAdmin:iamhungry@godishapp.bzsnd.mongodb.net/atx_smallbusiness_db?retryWrites=true&w=majority"
+    mongo = PyMongo(app)
+    print('Success!')
+except:
+    print('Failed connection to MONGO URI.')
 
+#Business id to test connection:
+biz_id = 'IVeSLhijGTYMkBN0OjWn4g'	
+print('\n')
+print('\n')
+print('#####')
+print('Business id is '+biz_id)
+print('#####')
+print('\n')
+print('#####')
+print('The mongo object is: ')
+print(mongo)
+print('#####')
+print('\n')
 
+#Define a business:
+business = mongo.db.business_list.find_one_or_404({"business_id": biz_id})
+print('\n')
+print('#####')
+print(business)
+print('#####')
+print('\n')
 
-  
+biz_df = pd.DataFrame(business)
 
+print('\n')
+print('#####')
+print(biz_df)
+print('#####')
+print('\n')
 
-#### END MAPPING SETUP ####
-
-
+#Use the below if following pymongo tutorial https://pymongo.readthedocs.io/en/stable/tutorial.html
+#client = pymongo.MongoClient("mongodb+srv://dishAdmin:iamhungry@godishapp.bzsnd.mongodb.net/atx_smallbusiness_db?retryWrites=true&w=majority")
 
 ### ROUTES / WEBPAGES ###
 
@@ -42,11 +72,18 @@ mongo = PyMongo(app)
 #Returns a simple string
 @app.route("/")
 def home():
+    #total_swipes = mongo.db.business.aggregate[]
     return render_template("index.html")
 
 @app.route("/index.html")
 def index():
     return render_template("/index.html")
+
+@app.route("/user/<username>")
+def user_profile(username):
+    user = mongo.db.users.find_one_or_404({"business_id": username})
+    return render_template("user.html",
+        user=user)
 
 
 # #Route 4: show user a form
