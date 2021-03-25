@@ -47,21 +47,29 @@ print(mongo)
 print('#####')
 print('\n')
 
-#Define a business:
-business = mongo.db.business_list.find_one_or_404({"business_id": biz_id})
-print('\n')
-print('#####')
-print(business)
-print('#####')
-print('\n')
+try:
+    #Define a business: (Will error out if no data is found)
+    business = mongo.db.business_list.find_one_or_404({"business_id": biz_id})
+    print('\n')
+    print('#####')
+    print(business)
+    print('#####')
+    print('\n')
 
-biz_df = pd.DataFrame(business)
+    biz_df = pd.DataFrame(business)
 
-print('\n')
-print('#####')
-print(biz_df)
-print('#####')
-print('\n')
+    print('\n')
+    print('#####')
+    print(biz_df)
+    print('#####')
+    print('\n')
+
+    left_swipes = biz_df['left_swipes']
+    right_swipes = biz_df['right_swipes']
+    presented_count = biz_df['presented_count']
+    print("Dataframe collected and created.")
+except:
+    print("No business data able to be collected from the database.")
 
 #Use the below if following pymongo tutorial https://pymongo.readthedocs.io/en/stable/tutorial.html
 #client = pymongo.MongoClient("mongodb+srv://dishAdmin:iamhungry@godishapp.bzsnd.mongodb.net/atx_smallbusiness_db?retryWrites=true&w=majority")
@@ -85,6 +93,17 @@ def user_profile(username):
     return render_template("user.html",
         user=user)
 
+@app.route("/blank.html")
+def blank():
+    return render_template("/user.html", restaurant_name = 'The Jackalope')
+
+@app.route("/res_page.html")
+def res_page():
+    return render_template("/res_page.html", restaurant_name = 'The Jackalope')
+
+@app.route("/res_page_3.html")
+def res_page_3():
+    return render_template("/res_page_3.html", restaurant_name = 'The Jackalope')
 
 # #Route 4: show user a form
 # @app.route("/form")
