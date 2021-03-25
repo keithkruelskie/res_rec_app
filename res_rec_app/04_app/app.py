@@ -4,6 +4,8 @@ from flask_pymongo import PyMongo
 
 import pymongo
 
+from bson import ObjectId
+
 import numpy as np
 #MPLD3 lets us make an html of a matplotlib plot:
 import matplotlib.pyplot as plt, mpld3
@@ -43,33 +45,54 @@ print('#####')
 print('\n')
 print('#####')
 print('The mongo object is: ')
-print(mongo)
+print(mongo.db)
 print('#####')
 print('\n')
 
 try:
     #Define a business: (Will error out if no data is found)
-    business = mongo.db.business_list.find_one_or_404({"business_id": biz_id})
+    business = mongo.db.businesses.find_one_or_404({"businessId": biz_id})
     print('\n')
     print('#####')
     print(business)
     print('#####')
     print('\n')
 
-    biz_df = pd.DataFrame(business)
+    print(type(business))
+    print("trying to make dataframe.")
+
+    biz_df = pd.DataFrame(business, index=[0])
+
+    print("Dataframe created successfully.")
 
     print('\n')
-    print('#####')
-    print(biz_df)
+    print('##### Printout of the dataframe')
+    for column in biz_df.columns:
+        print(biz_df[column].iloc[0])
     print('#####')
     print('\n')
 
-    left_swipes = biz_df['left_swipes']
-    right_swipes = biz_df['right_swipes']
-    presented_count = biz_df['presented_count']
+    stars = biz_df['stars']
+    print('Number of Stars: '+ str(stars))
+    #right_swipes = biz_df['right_swipes']
+    #presented_count = biz_df['presented_count']
     print("Dataframe collected and created.")
 except:
     print("No business data able to be collected from the database.")
+
+try:
+    zipcode_entries = mongo.db.businesses.find({'postalCode':78741})
+    for i in range(3):
+        print(zipcode_entries[i])
+    print((zipcode_entries.count()))
+    zip_list = []
+    for i in range(zipcode_entries.count()):
+        zip_list.append(zipcode_entries[i])
+    zip_df = pd.DataFrame(zip_list)
+    print("zip_df created!")
+    print(zip_df['stars'].mean())
+except:
+    print("No zipcode entries could be located.")
 
 #Use the below if following pymongo tutorial https://pymongo.readthedocs.io/en/stable/tutorial.html
 #client = pymongo.MongoClient("mongodb+srv://dishAdmin:iamhungry@godishapp.bzsnd.mongodb.net/atx_smallbusiness_db?retryWrites=true&w=majority")
